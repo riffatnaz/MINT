@@ -11,7 +11,7 @@
 
 ## Overview
 
-MINT 1.0.0 takes a TCGA project (e.g. TCGA-BRCA, TCGA-LUSC) from raw expression data through
+MINT v1.0.0 takes a TCGA project (e.g. TCGA-BRCA, TCGA-LUSC) from raw expression data through
 a full differential expression and survival analysis workflow, producing a self-contained
 HTML report at the end. It was built around a single BRCA analysis and generalized so the
 same pipeline can be pointed at other TCGA cohorts by changing a config file, not the code.
