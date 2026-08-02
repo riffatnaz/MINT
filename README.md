@@ -88,8 +88,9 @@ cd MINT
 Then, in R:
 
 ```r
-install.packages(c("survival", "survminer", "msigdbr", "ggplot2", "dplyr", "rmarkdown"))
-BiocManager::install(c("DESeq2", "TCGAbiolinks", "clusterProfiler", "ReactomePA", "EnhancedVolcano", "org.Hs.eg.db"))
+install.packages(c("tidyverse", "survival", "survminer", "msigdbr", "ggplot2", "dplyr", "rmarkdown"))
+if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+BiocManager::install(c("DESeq2", "TCGAbiolinks", "SummarizedExperiment", "clusterProfiler", "ReactomePA", "EnhancedVolcano", "org.Hs.eg.db", "pheatmap"))
 ```
 
 ## Usage
