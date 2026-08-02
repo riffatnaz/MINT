@@ -88,9 +88,9 @@ cd MINT
 Then, in R:
 
 ```r
-install.packages(c("tidyverse", "survival", "survminer", "msigdbr", "ggplot2", "dplyr", "rmarkdown"))
+install.packages(c("tidyverse", "survival", "ashr", "survminer", "msigdbr", "rmarkdown"))
 if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-BiocManager::install(c("DESeq2", "TCGAbiolinks", "SummarizedExperiment", "clusterProfiler", "ReactomePA", "EnhancedVolcano", "org.Hs.eg.db", "pheatmap"))
+BiocManager::install(c("DESeq2", "TCGAbiolinks", "SummarizedExperiment", "clusterProfiler", "enrichplot", "ReactomePA", "EnhancedVolcano", "org.Hs.eg.db", "apeglm", "fgsea", "pheatmap"))
 ```
 
 ## Usage
@@ -111,6 +111,19 @@ source("run_pipeline.R")
 MINT was validated on TCGA-BRCA and TCGA-LUSC. To point it at a different TCGA project,
 change the project ID in `config.R` — no code changes required. GEO-dataset support is
 kept in mind structurally but not yet implemented.
+
+## Acknowledgements
+
+MINT is built on the shoulders of several open-source R/Bioconductor packages:
+
+[TCGAbiolinks](https://bioconductor.org/packages/TCGAbiolinks/) — TCGA data query and download
+[DESeq2](https://bioconductor.org/packages/DESeq2/) — differential expression analysis
+[clusterProfiler](https://bioconductor.org/packages/clusterProfiler/) — GO and KEGG over-representation and GSEA
+[ReactomePA](https://bioconductor.org/packages/ReactomePA/) — Reactome pathway enrichment
+[msigdbr](https://cran.r-project.org/package=msigdbr) — MSigDB gene sets for GSEA
+[survival / survminer](https://cran.r-project.org/package=survminer) — Kaplan–Meier and Cox proportional hazards modeling
+[EnhancedVolcano](https://bioconductor.org/packages/EnhancedVolcano/) — volcano plot visualization
+[rmarkdown](https://rmarkdown.rstudio.com/) — automated HTML report generation
 
 ## License
 
