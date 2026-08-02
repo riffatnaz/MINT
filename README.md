@@ -81,7 +81,7 @@ MINT/
 ## Installation
 
 ```bash
-git clone https://github.com/riffatnaz/MINT.git
+git clone [https://github.com/riffatnaz/MINT.git](https://github.com/riffatnaz/MINT-)
 cd MINT
 ```
 
