@@ -116,14 +116,15 @@ kept in mind structurally but not yet implemented.
 
 MINT is built on the shoulders of several open-source R/Bioconductor packages:
 
-[TCGAbiolinks](https://bioconductor.org/packages/TCGAbiolinks/) — TCGA data query and download
-[DESeq2](https://bioconductor.org/packages/DESeq2/) — differential expression analysis
-[clusterProfiler](https://bioconductor.org/packages/clusterProfiler/) — GO and KEGG over-representation and GSEA
-[ReactomePA](https://bioconductor.org/packages/ReactomePA/) — Reactome pathway enrichment
-[msigdbr](https://cran.r-project.org/package=msigdbr) — MSigDB gene sets for GSEA
-[survival / survminer](https://cran.r-project.org/package=survminer) — Kaplan–Meier and Cox proportional hazards modeling
-[EnhancedVolcano](https://bioconductor.org/packages/EnhancedVolcano/) — volcano plot visualization
-[rmarkdown](https://rmarkdown.rstudio.com/) — automated HTML report generation
+- [TCGAbiolinks](https://bioconductor.org/packages/TCGAbiolinks/) — TCGA data query and download
+- [DESeq2](https://bioconductor.org/packages/DESeq2/) — differential expression analysis
+- [clusterProfiler](https://bioconductor.org/packages/clusterProfiler/) — GO and KEGG over-representation and GSEA
+- [ReactomePA](https://bioconductor.org/packages/ReactomePA/) — Reactome pathway enrichment
+- [msigdbr](https://cran.r-project.org/package=msigdbr) — MSigDB gene sets for GSEA
+- [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) — fast pre-ranked gene set enrichment
+- [survival / survminer](https://cran.r-project.org/package=survminer) — Kaplan–Meier and Cox proportional hazards modeling
+- [EnhancedVolcano](https://bioconductor.org/packages/EnhancedVolcano/) — volcano plot visualization
+- [rmarkdown](https://rmarkdown.rstudio.com/) — automated HTML report generation
 
 ## License
 
