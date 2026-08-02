@@ -20,6 +20,7 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(tibble)
   library(ashr)
+  library(apeglm)
 })
 
 ensure_dir(RESULTS_DIR)
