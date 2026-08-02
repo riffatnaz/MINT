@@ -1,0 +1,6 @@
+"covariate","term","HR","HR_lower","HR_upper","p_value","model"
+"expression","",0.922216471843463,0.874670165953532,0.972347353373188,0.00271502117137319,"Multivariate (adjusted)"
+"age_at_index","",1.04026514667119,1.02628910065232,1.05443151904371,1.06466297596421e-08,"Multivariate (adjusted)"
+"ajcc_pathologic_stage","Stage II",1.7545659547322,1.01587047619147,3.03040767662304,0.0437542644589876,"Multivariate (adjusted)"
+"ajcc_pathologic_stage","Stage III",3.41855129919296,1.92245425014355,6.07894465334676,2.84566526743441e-05,"Multivariate (adjusted)"
+"ajcc_pathologic_stage","Stage IV",12.3109626169154,6.05091406664445,25.0474224035934,4.28342193637896e-12,"Multivariate (adjusted)"

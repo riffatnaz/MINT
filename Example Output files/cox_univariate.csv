@@ -1,0 +1,2 @@
+"covariate","term","HR","HR_lower","HR_upper","p_value","model"
+"expression","",0.992149746526848,0.941603199617201,1.0454097011708,0.767682045079703,"Univariate (expression only)"
