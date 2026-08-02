@@ -30,10 +30,9 @@ PVAL_CUTOFF <- 0.05
 LFC_CUTOFF  <- 1
 
 # LFC shrinkage method for the MA plot only (deseq2_results.csv/GSEA stay
-# unshrunken). "ashr" (recommended, works directly with a contrast),
-# "apeglm" (needs a coef name, not a contrast), "normal", or "none" to
+# unshrunken). "ashr", "apeglm", "normal", or "none" to
 # disable shrinkage.
-LFC_SHRINK_METHOD <- "ashr"
+LFC_SHRINK_METHOD <- "apeglm"
 
 # Gene used for the illustrative expression boxplot and survival split.
 GENE_OF_INTEREST <- "ESR1"
