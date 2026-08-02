@@ -1,0 +1,259 @@
+---
+pagetitle: "Transcriptomic Analysis Report"
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+    df_print: paged
+params:
+  project:      "not set -- knit via R/07_generate_report.R"
+  results_dir:  "results"
+  gene:         "not set"
+  pval_cutoff:  0.05
+  lfc_cutoff:   1
+---
+
+<div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px;">
+<div>
+<h1 style="margin-bottom: 6px;">Transcriptomic Analysis Report</h1>
+<h4 style="color: #6c757d; font-weight: 400; margin: 6px 0 2px 0;">`r params$project`</h4>
+<p style="color: #6c757d; margin: 2px 0;">`r format(Sys.Date(), '%B %d, %Y')`</p>
+</div>
+<img src="./assets/mint_logo.png" alt="MINT logo" width="130" style="margin-top: 6px; flex-shrink: 0;"/>
+</div>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(flextable)
+
+rd <- params$results_dir
+img <- function(f) file.path(rd, f)
+has_file <- function(f) file.exists(file.path(rd, f))
+
+# Defensive coercion: guarantees these are numeric even if this file is
+# ever knit directly (RStudio "Knit" button) instead of via
+# R/07_generate_report.R, where the YAML defaults above would otherwise be
+# used as-is.
+pval_cutoff <- as.numeric(params$pval_cutoff)
+lfc_cutoff  <- as.numeric(params$lfc_cutoff)
+
+read_top <- function(f, n = 15) {
+  if (!has_file(f)) return(NULL)
+  df <- read.csv(file.path(rd, f))
+  head(df, n)
+}
+
+# Formats small p/padj values as "<0.005" instead of long decimals.
+format_pval <- function(x, threshold = 0.005) {
+  ifelse(x < threshold, paste0("<", threshold), formatC(x, format = "f", digits = 4))
+}
+
+# Shared table style. p/padj columns get format_pval; other numeric
+# columns get fixed decimal rounding. `title` adds a caption above the table.
+nice_table <- function(df, digits = 4, title = NULL) {
+  pval_cols <- names(df)[tolower(names(df)) %in% c("padj", "pvalue", "p_value", "pval")]
+  for (col in pval_cols) df[[col]] <- format_pval(df[[col]])
+
+  numeric_cols <- setdiff(names(df)[sapply(df, is.numeric)], pval_cols)
+  ft <- flextable(df)
+  if (length(numeric_cols) > 0) ft <- colformat_double(ft, j = numeric_cols, digits = digits)
+  if (!is.null(title)) ft <- set_caption(ft, caption = title)
+  ft <- theme_zebra(ft)
+  ft <- autofit(ft)
+  ft <- fontsize(ft, size = 10, part = "all")
+  ft <- bg(ft, part = "header", bg = "#2c3e50")
+  ft <- color(ft, part = "header", color = "white")
+  ft
+}
+```
+
+This report summarizes a transcriptomic analysis of `r params$project`, covering
+differential expression, functional enrichment (GO, KEGG, Reactome), gene set
+enrichment analysis (GSEA), and survival analysis for `r params$gene`.
+Significance throughout is defined as adjusted p-value < `r pval_cutoff`,
+with a |log2 fold change| >= `r lfc_cutoff` threshold for differential
+expression.
+
+## Sample Integrity Overview
+
+```{r pca, results='asis'}
+if (has_file("qc_pca.png")) {
+  cat("The PCA plot below shows how samples separate along the first two ",
+      "principal components of the variance-stabilized expression data. ",
+      "Clear separation between Tumor and Normal samples supports the ",
+      "validity of the downstream differential expression comparison.\n\n")
+  knitr::include_graphics(img("qc_pca.png"))
+} else {
+  cat("_PCA plot not found -- run 03_deseq2_analysis.R first._")
+}
+```
+
+```{r dispersion, results='asis'}
+if (has_file("qc_dispersion.png")) {
+  cat("\n\nThe dispersion plot checks whether DESeq2's variance model fit ",
+      "the data well -- gene-wise estimates (black) should shrink toward ",
+      "the fitted trend (red) to the final estimates used for testing (blue).\n\n")
+  knitr::include_graphics(img("qc_dispersion.png"))
+}
+```
+
+```{r poisson-dist, results='asis'}
+if (has_file("qc_poisson_distance.png")) {
+  cat("\n\nThis project has few or no Normal samples, so sample-to-sample ",
+      "similarity is also checked directly on raw counts (Poisson distance), ",
+      "independent of the Tumor/Normal grouping above.\n\n")
+  knitr::include_graphics(img("qc_poisson_distance.png"))
+}
+```
+
+## Differential Expression (DESeq2)
+
+```{r deg-summary, results='asis'}
+if (has_file("deseq2_results.csv")) {
+  deg <- read.csv(file.path(rd, "deseq2_results.csv"))
+  sig <- deg %>% filter(padj < pval_cutoff, abs(log2FoldChange) >= lfc_cutoff)
+  cat(sprintf(
+    "Of %d genes tested, **%d** were called significant (padj < %s, |log2FC| >= %s): %d upregulated, %d downregulated in Tumor vs Normal.\n\n",
+    nrow(deg), nrow(sig), pval_cutoff, lfc_cutoff,
+    sum(sig$log2FoldChange > 0), sum(sig$log2FoldChange < 0)
+  ))
+} else {
+  cat("_DESeq2 results not found -- run 03_deseq2_analysis.R first._")
+}
+```
+
+```{r volcano, results='asis'}
+if (has_file("deg_volcano.png")) {
+  cat("The volcano plot highlights the most significant differentially ",
+      "expressed genes by adjusted p-value and fold change.\n\n")
+  knitr::include_graphics(img("deg_volcano.png"))
+}
+```
+
+```{r ma-plot, results='asis'}
+if (has_file("qc_ma_plot.png")) {
+  cat("\n\nThe MA plot checks for expression-level-dependent bias in the ",
+      "results -- significant genes (colored) should appear across the ",
+      "expression range, not just at low counts. Fold changes here may be ",
+      "shrunken (see plot title) for display purposes; the DEG table and ",
+      "CSV always report unshrunken values.\n\n")
+  knitr::include_graphics(img("qc_ma_plot.png"))
+}
+```
+
+```{r heatmap, results='asis'}
+if (has_file("deg_top50_heatmap.png")) {
+  cat("\n\nExpression (z-scored) of the top 50 differentially expressed ",
+      "genes, clustered by sample and by gene.\n\n")
+  knitr::include_graphics(img("deg_top50_heatmap.png"))
+}
+```
+
+```{r goi, results='asis'}
+goi_file <- paste0("expression_", params$gene, ".png")
+if (has_file(goi_file)) {
+  cat(sprintf("\n\nNormalized expression of the gene of interest, **%s**, by condition.\n\n", params$gene))
+  knitr::include_graphics(img(goi_file))
+}
+```
+
+### Top differentially expressed genes
+
+```{r deg-table}
+top_deg <- read_top("deseq2_results.csv", 20)
+if (!is.null(top_deg)) {
+  top_deg %>%
+    arrange(padj) %>%
+    head(20) %>%
+    dplyr::select(gene_name, log2FoldChange, padj) %>%
+    nice_table(title = "Top 20 differentially expressed genes")
+}
+```
+
+## Functional Enrichment
+
+Over-representation analysis (ORA) tests whether the significant DEGs are
+enriched for specific biological pathways or processes, relative to all
+tested genes as background. Separate results are shown for up- and
+down-regulated genes across three reference databases: Gene Ontology (GO
+Biological Process), KEGG, and Reactome.
+
+### Upregulated genes
+
+```{r enrich-up, results='asis'}
+for (f in c("go_bp_upregulated.png", "kegg_upregulated.png", "reactome_upregulated.png")) {
+  if (has_file(f)) cat(sprintf("![](%s)\n\n", img(f)))
+}
+```
+
+
+### Downregulated genes
+
+```{r enrich-down, results='asis'}
+for (f in c("go_bp_downregulated.png", "kegg_downregulated.png", "reactome_downregulated.png")) {
+  if (has_file(f)) cat(sprintf("![](%s)\n\n", img(f)))
+}
+```
+
+## Gene Set Enrichment Analysis (GSEA)
+
+Unlike ORA, GSEA uses the full ranked gene list (ranked by DESeq2 test
+statistic) rather than only the genes that cross a significance threshold,
+making it sensitive to coordinated shifts across a pathway even when no
+individual gene is dramatically changed.
+
+```{r gsea, results='asis'}
+if (has_file("gsea_top_pathways.png")) {
+  knitr::include_graphics(img("gsea_top_pathways.png"))
+}
+```
+
+```{r gsea-table}
+gsea_top <- read_top("gsea_results.csv", 15)
+if (!is.null(gsea_top)) {
+  gsea_top %>%
+    dplyr::select(Pathway = pathway_label, NES, padj) %>%
+    nice_table(title = "Top 15 enriched gene sets (GSEA)")
+}
+```
+
+## Survival Analysis
+
+```{r km, results='asis'}
+if (has_file("survival_km_plot.png")) {
+  cat(sprintf(
+    "Patients were split into High/Low groups by median VST-normalized expression of **%s** among Tumor samples, and compared with a Kaplan-Meier estimator and log-rank test.\n\n",
+    params$gene
+  ))
+  knitr::include_graphics(img("survival_km_plot.png"))
+}
+```
+
+```{r cox-uni}
+if (has_file("cox_univariate.csv")) {
+  read.csv(file.path(rd, "cox_univariate.csv")) %>%
+    dplyr::select(-model) %>%
+    nice_table(title = "Univariate Cox regression (expression only)")
+}
+```
+
+```{r cox-multi-table}
+if (has_file("cox_multivariate.csv")) {
+  read.csv(file.path(rd, "cox_multivariate.csv")) %>%
+    dplyr::select(-model) %>%
+    nice_table(title = "Multivariate Cox regression (adjusted)")
+}
+```
+
+```{r cox-forest, results='asis'}
+if (has_file("cox_forest_plot.png")) {
+  knitr::include_graphics(img("cox_forest_plot.png"))
+}
+```
+
+---
+
+_Report generated automatically by `R/07_generate_report.R`. All thresholds and
+settings are defined in `config.R`. -- MINT 1.0.0_
