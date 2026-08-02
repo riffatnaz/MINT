@@ -20,9 +20,9 @@ same pipeline can be pointed at other TCGA cohorts by changing a config file, no
 - Automated TCGA RNA-seq counts + clinical data acquisition and caching (via `TCGAbiolinks`)
 - Automatic Tumor/Normal label inference and low-count gene filtering, with a warning if too few Normal samples are available
 - Differential expression analysis (`DESeq2`), with PCA, dispersion, volcano, MA plot, and top-DEG heatmap
-- Functional enrichment — GO (Biological Process), KEGG, and Reactome over-representation analysis on up/down DEGs
+- Functional enrichment: GO (Biological Process), KEGG, and Reactome over-representation analysis on up/down DEGs
 - Gene-set enrichment analysis (GSEA) against an MSigDB collection
-- Survival analysis — Kaplan–Meier curves plus univariate (and multivariate, where clinical covariates allow) Cox proportional hazards, stratified by a gene of interest
+- Survival analysis: Kaplan–Meier curves plus univariate (and multivariate, where clinical covariates allow) Cox proportional hazards, stratified by a gene of interest
 - A single auto-rendered HTML report (`report.Rmd`) embedding every plot and table, opened automatically on completion
 - Checkpointed, segment-by-segment execution — rerun one stage without repeating the rest
 
@@ -113,8 +113,8 @@ kept in mind structurally but not yet implemented.
 
 ## License
 
-MIT License — see `LICENSE` for details.
+MIT License  see `LICENSE` for details.
 
-## Author
+## Reach Out
 
-**Riffat Naz** — [GitHub](https://github.com/riffatnaz)
+**Riffat Naz** — [GitHub](https://github.com/riffatnaz)  — [LinkedIn](www.linkedin.com/in/riffat-naz)
