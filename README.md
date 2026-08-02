@@ -117,4 +117,4 @@ MIT License  see `LICENSE` for details.
 
 ## Reach Out
 
-**Riffat Naz** — [GitHub](https://github.com/riffatnaz)  — [LinkedIn](www.linkedin.com/in/riffat-naz)
+**Riffat Naz** — [GitHub](https://github.com/riffatnaz)  — [LinkedIn](https://www.linkedin.com/in/riffat-naz/)
